@@ -1,4 +1,4 @@
-# CS4100-Project
+# Music Sheet Generator - CS 4100 Project
 ## Project Members: Mehr Anand (Project Manager), Mihalis Koutouvos, William, Sartorio, and Nalini Singh
 
 ### Problem Statement:
