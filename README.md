@@ -1,5 +1,5 @@
 # Music Sheet Generator - CS 4100 Project
-## Project Members: Mehr Anand (Project Manager), Mihalis Koutouvos, William, Sartorio, and Nalini Singh
+## Project Members: Mehr Anand (Project Manager), Mihalis Koutouvos, William Sartorio, and Nalini Singh
 
 ### Problem Statement:
 Traditional musical chord progression involves following complex patterns that blend statistical regularities (such as transitions) with theoretical constraints (such as where one’s voice should increase/decrease). With two AI models for generating coherent chord progressions, we should be able to simplify and investigate where this problem can be ameliorated. 
