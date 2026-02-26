@@ -1,5 +1,5 @@
 # Music Sheet Generator
-### CS 4100 — Artificial Intelligence | Northeastern University
+### CS 4100 - Artificial Intelligence | Northeastern University
 
 **Instructor:** Rajagopal Venkatesaramani
 
@@ -75,13 +75,11 @@ python genetic/evolve.py --generations 500 --population 100
 | Presentations | April 10, 2025 |
 | Final Deliverables | April 17, 2025 |
 
-The team operates on a two-week sprint cycle, with weekly working sessions every Sunday from 4:00 PM – 5:30 PM.
----
 
 ## Acknowledgments
 
-We thank the CS 4100 teaching staff — in particular the TAs specializing in genetic algorithms and machine learning — for their guidance throughout this project.
+We thank the CS 4100 teaching staff - in particular the TAs specializing in genetic algorithms and machine learning - for their guidance throughout this project.
 
 ---
 
-*CS 4100 — Artificial Intelligence, Northeastern University*
+*CS 4100 - Artificial Intelligence, Northeastern University*
