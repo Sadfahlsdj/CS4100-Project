@@ -1,71 +1,90 @@
 import random
-from collections import defaultdict, Counter
-from itertools import chain
+from collections import defaultdict
+
+#Class for the Markov model to generate chord progressions
+class MarkovChordModel:
+
+    #Constructor
+    def __init__(self):
+        #Count transitions between chords
+        self.transition_counts = defaultdict(lambda: defaultdict(int))
+
+        #Store normalized probabilities
+        self.transition_probs = {}
+
+    #Train the model
+    def train(self, progressions):
+
+        for prog in progressions:
+            for i in range(len(prog) - 1):
+
+                current_chord = prog[i]
+                next_chord = prog[i + 1]
+                self.transition_counts[current_chord][next_chord] += 1
+
+        self._normalize()
+
+    def _normalize(self):
+        for chord, next_chords in self.transition_counts.items():
+
+            total = sum(next_chords.values())
+
+            self.transition_probs[chord] = {
+                next_chord: count / total
+                for next_chord, count in next_chords.items()
+            }
+
+    #Generate a chord progression using the learned probabilities.
+    def generate(self, start="I", length=8):
+        progression = [start]
+        current_chord = start
+
+        for _ in range(length - 1):
+            if current_chord not in self.transition_probs:
+                break
+
+            next_chords = list(self.transition_probs[current_chord].keys())
+            probabilities = list(self.transition_probs[current_chord].values())
+
+            next_chord = random.choices(next_chords, probabilities)[0]
+
+            progression.append(next_chord)
+            current_chord = next_chord
+
+        return progression
 
 
-def build_transition_matrix(file_path):
-    with open(file_path, 'r') as f:
-        # more complex chords (ex: 'ger' as augmented 6th) show up in dataset, but i'd like to avoid them
-        valid_chords = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii',
-                        'I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-        # chords are space separated; get it in a flattened list
-        chords = list(chain(*[[c for c in l.strip().split() if c in valid_chords] for l in f.readlines()]))
+def load_progressions(filepath):
+    progressions = []
 
-    transitions = defaultdict(Counter)  # basic bigram for now
-    for i in range(len(chords) - 1):
-        transitions[chords[i]][chords[i + 1]] += 1
+    with open(filepath, "r") as file:
 
-    # counts to probabilities
-    probs = {}
-    for chord, next_chords in transitions.items():
-        total = sum(next_chords.values())
-        probs[chord] = {nxt: count / total for nxt, count in next_chords.items()}
-    return probs, list(set(chords))
+        for line in file:
+            line = line.strip()
+            if not line:
+                continue
 
+            chords = line.split()
+            progressions.append(chords)
 
-# fitness
-def calculate_fitness(progression, probs):
-    score = 0
-    for i in range(len(progression) - 1):
-        current, nxt = progression[i], progression[i + 1]
-        # reward transitions that show up often
-        score += probs.get(current, {}).get(nxt, 0)
-    return score
+    return progressions
 
+#Main function to run the file/model
+def main():
+    #Load dataset
+    data = load_progressions("models/data/chord_bases_1.txt")
 
-# genetic operators
-def mutate(progression, all_chords, rate=0.1):
-    if random.random() < rate:
-        idx = random.randint(0, len(progression) - 1)
-        progression[idx] = random.choice(all_chords)
-    return progression
+    #Initialize model
+    model = MarkovChordModel()
+
+    #Train model
+    model.train(data)
+
+    #Generate some chord progressions
+    for _ in range(5):
+        progression = model.generate(start="I", length=6)
+        print("Generated:", " ".join(progression))
 
 
-def crossover(parent1, parent2):
-    point = random.randint(1, len(parent1) - 1)
-    return parent1[:point] + parent2[point:]
-
-
-# actual logic
-def generate_progression(probs, all_chords, length=4, pop_size=20, gens=50):
-    population = [[random.choice(all_chords) for _ in range(length)] for _ in range(pop_size)]
-
-    for _ in range(gens):
-        # sort by fitness
-        population = sorted(population, key=lambda p: calculate_fitness(p, probs), reverse=True)
-        next_gen = population[:2]
-
-        while len(next_gen) < pop_size:
-            p1, p2 = random.sample(population[:10], 2)
-            child = crossover(p1, p2)  # realistically this would be more random
-            child = mutate(child, all_chords)
-            next_gen.append(child)
-
-        population = next_gen
-
-    return population[0]
-
-
-matrix, vocab = build_transition_matrix("data/chord_bases_1.txt")
-best_song = generate_progression(matrix, vocab, length=16)
-print("Generated Progression:", " - ".join(best_song))
+if __name__ == "__main__":
+    main()
