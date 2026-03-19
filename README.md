@@ -7,6 +7,23 @@
 
 ---
 
+## Usage
+Make sure you are in the root folder.
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run app: 
+
+```bash
+python -m uvicorn main:app --reload
+```
+
+To test endpoint(s), go to http://127.0.0.1:8000/docs after running the app
+
 ## Project Statement
 
 Traditional chord progression follows patterns that simultaneously satisfy statistical regularities (e.g., transition probabilities between chords) and theoretical constraints (e.g., voice leading, resolution, tension). Existing work tends to optimize a single technique in isolation. This project directly compares two fundamentally different AI approaches applied to the same task, offering insight into the tradeoffs between learned pattern recognition and rule-guided optimization.
