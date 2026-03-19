@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from lstm import ChordLSTM
+from models.lstm import ChordLSTM
 
 
 def load_model_and_generate(model_path, data_path, seed_chords, length=20, temperature=0.8):

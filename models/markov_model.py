@@ -1,21 +1,33 @@
 import random
 from collections import defaultdict
 
+
 #Class for the Markov model to generate chord progressions
 class MarkovChordModel:
-
-    #Constructor
     def __init__(self):
-        #Count transitions between chords
         self.transition_counts = defaultdict(lambda: defaultdict(int))
-
-        #Store normalized probabilities
         self.transition_probs = {}
+        self.data = []
+
+    def load_progressions(self, filepath):
+        progressions = []
+
+        with open(filepath, "r") as file:
+
+            for line in file:
+                line = line.strip()
+                if not line:
+                    continue
+
+                chords = line.split()
+                progressions.append(chords)
+
+        self.data = progressions
 
     #Train the model
-    def train(self, progressions):
+    def train(self):
 
-        for prog in progressions:
+        for prog in self.data:
             for i in range(len(prog) - 1):
 
                 current_chord = prog[i]
@@ -54,33 +66,13 @@ class MarkovChordModel:
         return progression
 
 
-def load_progressions(filepath):
-    progressions = []
-
-    with open(filepath, "r") as file:
-
-        for line in file:
-            line = line.strip()
-            if not line:
-                continue
-
-            chords = line.split()
-            progressions.append(chords)
-
-    return progressions
 
 #Main function to run the file/model
 def main():
-    #Load dataset
-    data = load_progressions("models/data/chord_bases_1.txt")
-
-    #Initialize model
     model = MarkovChordModel()
+    model.load_progressions("data/chord_bases_1.txt")
+    model.train()
 
-    #Train model
-    model.train(data)
-
-    #Generate some chord progressions
     for _ in range(5):
         progression = model.generate(start="I", length=6)
         print("Generated:", " ".join(progression))

@@ -47,7 +47,8 @@ def crossover(parent1, parent2):
 
 
 # actual logic
-def generate_progression(probs, all_chords, length=4, pop_size=20, gens=50):
+def generate_progression(filepath, length=4, pop_size=20, gens=50):
+    probs, all_chords = build_transition_matrix(filepath)
     population = [[random.choice(all_chords) for _ in range(length)] for _ in range(pop_size)]
 
     for _ in range(gens):
@@ -65,7 +66,3 @@ def generate_progression(probs, all_chords, length=4, pop_size=20, gens=50):
 
     return population[0]
 
-
-matrix, vocab = build_transition_matrix("data/chord_bases_1.txt")
-best_song = generate_progression(matrix, vocab, length=16)
-print("Generated Progression:", " - ".join(best_song))
