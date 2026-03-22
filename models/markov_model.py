@@ -1,82 +1,96 @@
 import random
 from collections import defaultdict
 
-
 #Class for the Markov model to generate chord progressions
 class MarkovChordModel:
-    def __init__(self):
-        self.transition_counts = defaultdict(lambda: defaultdict(int))
-        self.transition_probs = {}
-        self.data = []
 
-    def load_progressions(self, filepath):
-        progressions = []
+  #Constructor
+  def __init__(self):
+      #Count transitions between chords
+      self.transition_counts = defaultdict(lambda: defaultdict(int))
+      #Store normalized probabilities
+      self.transition_probs = {}
 
-        with open(filepath, "r") as file:
+  #Train the Markov model:
+  #This model learns from the dataset of chord progressions. It begins by looping through each progression
+  #in the data, then looks at consecutive chords to count how many times each chord transitions to the next,
+  #and then counts how many times each transition occurs.
+  def train(self, progressions):
+     
+      for prog in progressions:
+          for i in range(len(prog) - 1):
+              current_chord = prog[i]
+              next_chord = prog[i + 1]
+              self.transition_counts[current_chord][next_chord] += 1
 
-            for line in file:
-                line = line.strip()
-                if not line:
-                    continue
+      self._normalize()
 
-                chords = line.split()
-                progressions.append(chords)
+   #Converts counts to probabilities for us to use: For example, if "I" transitions to "IV"
+   #10 times out of the 30 times we dictate, then the probability of this transition becomes 10/30 = 0.33
+  def _normalize(self):
+      for chord, next_chords in self.transition_counts.items():
+          total = sum(next_chords.values())
+          self.transition_probs[chord] = {
+              next_chord: count / total
+              for next_chord, count in next_chords.items()
+          }
 
-        self.data = progressions
+  #Generate a chord progression using the learned probabilities.
+  #We begin with I (this may be changed later). Then, we loop through length - 1 times to build the progression.
+  #Next, we look up the possible next chords and randomly select the next chord based on the learned probabilities.
+  #We will repeat this until the desired length is reached.
+  def generate(self, start="I", length=14):
+      progression = [start]
+      current_chord = start
 
-    #Train the model
-    def train(self):
+      for _ in range(length - 1):
+          if current_chord not in self.transition_probs:
+              break
+         
+          next_chords = list(self.transition_probs[current_chord].keys())
+          probabilities = list(self.transition_probs[current_chord].values())
 
-        for prog in self.data:
-            for i in range(len(prog) - 1):
+          next_chord = random.choices(next_chords, probabilities)[0]
+          progression.append(next_chord)
+          current_chord = next_chord
 
-                current_chord = prog[i]
-                next_chord = prog[i + 1]
-                self.transition_counts[current_chord][next_chord] += 1
+      return progression
 
-        self._normalize()
 
-    def _normalize(self):
-        for chord, next_chords in self.transition_counts.items():
+#Read the chord progression dataset from a text file and convert it into a list of chord progressions
+def load_progressions(filepath):
+  progressions = []
 
-            total = sum(next_chords.values())
+  with open(filepath, "r") as file:
+      for line in file:
+          line = line.strip()
+          if not line:
+              continue
 
-            self.transition_probs[chord] = {
-                next_chord: count / total
-                for next_chord, count in next_chords.items()
-            }
+          chords = line.split()
+          progressions.append(chords)
 
-    #Generate a chord progression using the learned probabilities.
-    def generate(self, start="I", length=8):
-        progression = [start]
-        current_chord = start
-
-        for _ in range(length - 1):
-            if current_chord not in self.transition_probs:
-                break
-
-            next_chords = list(self.transition_probs[current_chord].keys())
-            probabilities = list(self.transition_probs[current_chord].values())
-
-            next_chord = random.choices(next_chords, probabilities)[0]
-
-            progression.append(next_chord)
-            current_chord = next_chord
-
-        return progression
-
+  return progressions
 
 
 #Main function to run the file/model
 def main():
-    model = MarkovChordModel()
-    model.load_progressions("data/chord_bases_1.txt")
-    model.train()
+  #Load dataset
+  data = load_progressions("models/data/chord_bases_1.txt")
 
-    for _ in range(5):
-        progression = model.generate(start="I", length=6)
-        print("Generated:", " ".join(progression))
+  #Initialize model
+  model = MarkovChordModel()
+
+  #Train model
+  model.train(data)
+
+  #Accepting user input for the progression size
+  user_input_row_amount = int(input("Enter the length of the progression:14 "))
+ 
+  #Generate some chord progressions
+  progression = model.generate(start="I", length=user_input_row_amount)
+  print("Generated:", " ".join(progression))
 
 
 if __name__ == "__main__":
-    main()
+  main()
