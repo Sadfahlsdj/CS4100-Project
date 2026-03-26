@@ -3,7 +3,7 @@ import numpy as np
 from models.lstm import ChordLSTM
 
 
-def load_model_and_generate(model_path, data_path, seed_chords, length=20, temperature=0.8):
+def load_model_and_generate(model_path, data_path, seed_chords, length=20, temperature=0.8, dataset_type='no_repeats'):
     # load the already processed data
     data_meta = torch.load(data_path)
     vocab = data_meta['vocab']
@@ -11,7 +11,10 @@ def load_model_and_generate(model_path, data_path, seed_chords, length=20, tempe
     i2c = data_meta['i2c']
 
     # re-initializing using same parameters as the model was initialized with
-    model = ChordLSTM(vocab_size=len(vocab), embed_dim=64, hidden_dim=256)
+    if dataset_type == 'no_repeats':
+        model = ChordLSTM(vocab_size=len(vocab), embed_dim=64, hidden_dim=128)
+    else:
+        model = ChordLSTM(vocab_size=len(vocab), embed_dim=64, hidden_dim=256)
 
     # load weights
     model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
