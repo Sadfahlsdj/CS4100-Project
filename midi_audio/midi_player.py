@@ -30,6 +30,7 @@ import sys
 import argparse
 import os
 import time
+import subprocess
 
 try:
     import fluidsynth
@@ -46,23 +47,24 @@ except ImportError:
 # ─── INSTRUMENT MAP ───────────────────────────────────────────────────────────
 # General MIDI program numbers (0-indexed)
 INSTRUMENTS = {
-    'piano':    0,    # Acoustic Grand Piano
-    'violin':   40,   # Violin
-    'guitar':   25,   # Acoustic Guitar (steel)
-    'flute':    73,   # Flute
-    'trumpet':  56,   # Trumpet
-    'organ':    19,   # Church Organ
+    'piano':   0,    # Acoustic Grand Piano
+    'violin':  40,   # Violin
+    'guitar':  25,   # Acoustic Guitar (steel)
+    'flute':   73,   # Flute
+    'trumpet': 56,   # Trumpet
+    'organ':   19,   # Church Organ
 }
 
 SOUNDFONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'GeneralUser-GS.sf2')
 
+
 # ─── FLUIDSYNTH SETUP ─────────────────────────────────────────────────────────
 
-def init_synth(instrument_name, soundfont_path, driver='coreaudio', output_file=None, audio_type=None):
-    """Initialize FluidSynth with the chosen instrument and driver."""
+def init_synth(instrument_name, soundfont_path):
+    """Initialize FluidSynth for live playback with the chosen instrument."""
     if not os.path.exists(soundfont_path):
         print(f"Error: soundfont not found at '{soundfont_path}'")
-        print("Make sure GeneralUser-GS.sf2 is in the same folder as this script.")
+        print("Make sure GeneralUser-GS.sf2 is in the midi_audio folder.")
         sys.exit(1)
 
     program = INSTRUMENTS.get(instrument_name.lower())
@@ -71,12 +73,8 @@ def init_synth(instrument_name, soundfont_path, driver='coreaudio', output_file=
         sys.exit(1)
 
     fs = fluidsynth.Synth(samplerate=44100.0)
-
-    if output_file:
-        fs.start(driver='file', outputfile=output_file, audio_type=audio_type or 'wav')
-    else:
-        fs.start(driver=driver)
-        time.sleep(0.5)  # give CoreAudio time to initialize
+    fs.start(driver='coreaudio')
+    time.sleep(0.5)  # give CoreAudio time to initialize
 
     sfid = fs.sfload(soundfont_path)
     return fs, sfid, program
@@ -94,7 +92,6 @@ def send_midi_to_synth(fs, midi_path, sfid, program):
             fs.program_select(ch, sfid, 0, program)
 
     for msg in mid.play():
-        # Use the message's own channel so both hands play correctly
         ch = getattr(msg, 'channel', 0)
         if msg.type == 'note_on':
             if msg.velocity > 0:
@@ -116,7 +113,7 @@ def play_midi(midi_path, instrument_name, soundfont_path):
     print(f"  File       : {os.path.basename(midi_path)}")
     print(f"  Playing...")
 
-    fs, sfid, program = init_synth(instrument_name, soundfont_path, driver='coreaudio')
+    fs, sfid, program = init_synth(instrument_name, soundfont_path)
     try:
         send_midi_to_synth(fs, midi_path, sfid, program)
     finally:
@@ -128,14 +125,38 @@ def play_midi(midi_path, instrument_name, soundfont_path):
 # ─── WAV EXPORT ───────────────────────────────────────────────────────────────
 
 def midi_to_wav(midi_path, output_path, instrument_name, soundfont_path):
-    """Render a MIDI file to a WAV using FluidSynth's file renderer."""
+    if not os.path.exists(soundfont_path):
+        raise FileNotFoundError(f"Soundfont not found at '{soundfont_path}'")
+
+    program = INSTRUMENTS.get(instrument_name.lower())
+    if program is None:
+        raise ValueError(f"Unknown instrument '{instrument_name}'.")
+
     print(f"  Rendering '{os.path.basename(midi_path)}' → '{os.path.basename(output_path)}'...")
 
-    fs, sfid, program = init_synth(instrument_name, soundfont_path, output_file=output_path, audio_type='wav')
-    try:
-        send_midi_to_synth(fs, midi_path, sfid, program)
-    finally:
-        fs.delete()
+    # Inject program change into a temp MIDI file so fluidsynth uses the right instrument
+    mid = mido.MidiFile(midi_path)
+    for track in mid.tracks:
+        for ch in range(16):
+            if ch != 9:
+                track.insert(0, mido.Message('program_change', channel=ch, program=program, time=0))
+        break  # only inject into first track
+
+    import tempfile
+    with tempfile.NamedTemporaryFile(suffix='.mid', delete=False) as tmp:
+        tmp_path = tmp.name
+    mid.save(tmp_path)
+
+    result = subprocess.run([
+        'fluidsynth', '-ni', '-g', '1.0',
+        '-F', output_path, '-r', '44100',
+        soundfont_path, tmp_path
+    ], capture_output=True, text=True)
+
+    os.unlink(tmp_path)
+
+    if result.returncode != 0:
+        raise RuntimeError(f"fluidsynth CLI failed:\n{result.stderr}")
 
     print(f"  Saved → {output_path}")
 
