@@ -10,13 +10,30 @@ class MarkovChordModel:
       self.transition_counts = defaultdict(lambda: defaultdict(int))
       #Store normalized probabilities
       self.transition_probs = {}
+      self.progressions = []
+
+
+  def load_progressions(self, filepath):
+      progressions = []
+
+      with open(filepath, "r") as file:
+          for line in file:
+              line = line.strip()
+              if not line:
+                  continue
+
+              chords = line.split()
+              progressions.append(chords)
+
+
+      self.progressions = progressions
 
   #Train the Markov model:
   #This model learns from the dataset of chord progressions. It begins by looping through each progression
   #in the data, then looks at consecutive chords to count how many times each chord transitions to the next,
   #and then counts how many times each transition occurs.
-  def train(self, progressions):
-     
+  def train(self):
+      progressions = self.progressions
       for prog in progressions:
           for i in range(len(prog) - 1):
               current_chord = prog[i]
@@ -57,35 +74,17 @@ class MarkovChordModel:
       return progression
 
 
-#Read the chord progression dataset from a text file and convert it into a list of chord progressions
-def load_progressions(filepath):
-  progressions = []
-
-  with open(filepath, "r") as file:
-      for line in file:
-          line = line.strip()
-          if not line:
-              continue
-
-          chords = line.split()
-          progressions.append(chords)
-
-  return progressions
-
-
 #Main function to run the file/model
 def main():
-  #Load dataset
-  data = load_progressions("models/data/chord_bases.txt")
-
   #Initialize model
   model = MarkovChordModel()
+  model.load_progressions("data/chord_bases_no_repeats.txt")
 
   #Train model
-  model.train(data)
+  model.train()
 
   #Accepting user input for the progression size
-  user_input_row_amount = int(input("Enter the length of the progression:14 "))
+  user_input_row_amount = int(input("Enter the length of the progression: "))
  
   #Generate some chord progressions
   progression = model.generate(start="I", length=user_input_row_amount)

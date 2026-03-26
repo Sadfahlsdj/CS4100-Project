@@ -16,11 +16,12 @@ def _generate_sequence(model_type, length, dataset_type='no_repeats'):
     out = []
     if model_type.lower() == 'lstm':
         MODEL_PATH = f"models/model_states/chord_model{"_no_repeats" * (dataset_type == "no_repeats")}_epoch_10.pth"
-        DATA_PATH = f"models/data/chord_bases_{"_no_repeats" * (dataset_type == "no_repeats")}processed.pt"
+        DATA_PATH = f"models/data/chord_bases_{"no_repeats_" * (dataset_type == "no_repeats")}processed.pt"
         my_seed = ["I", "V", "vi", "IV", "I", "V", "I", "I"]
 
         for _ in range(length // 16):  # each generation round generates 16
-            out.extend(load_model_and_generate(MODEL_PATH, DATA_PATH, my_seed))
+            out.extend(load_model_and_generate(MODEL_PATH, DATA_PATH, my_seed,
+                                               dataset_type=dataset_type))
 
         return out
 
