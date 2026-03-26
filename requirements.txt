@@ -5,3 +5,4 @@ music21
 uvicorn
 mido
 pyfluidsynth
+streamlit
