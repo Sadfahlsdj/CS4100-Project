@@ -14,12 +14,13 @@ Install dependencies:
 
 ```bash
 pip install -r requirements.txt
+pip install streamlit
 ```
 
 Run app: 
 
 ```bash
-python -m uvicorn main:app --reload
+streamlit run app.py
 ```
 
 To test endpoint(s), go to http://127.0.0.1:8000/docs after running the app
@@ -44,16 +45,31 @@ Encodes chord progressions as candidate solutions and evolves them over generati
 Both models are evaluated on the same dataset of chord progressions. Metrics include harmonic coherence, adherence to voice leading rules, and subjective musical quality. A rule-based system supplements both models for error correction and constraint enforcement.
 
 
+```
 ## Repository Structure
 
-```
-.
-├── data/                  # Chord progression datasets
-├── markov/                # Markov Chain model implementation
-├── genetic/               # Genetic Algorithm model implementation
-├── evaluation/            # Evaluation scripts and metrics
-├── utils/                 # Shared utilities (parsing, music theory rules)
-├── results/               # Output progressions and comparison results
+├── models/                          # Core model implementations and data
+│   ├── data/                        # Chord progression datasets
+│   │   ├── chord_bases.txt          # Raw chord data
+│   │   ├── chord_bases_no_repeats.txt        # Deduplicated chord data
+│   │   ├── chord_bases_no_repeats_proc...    # Preprocessed no-repeats data
+│   │   └── chord_bases_processed.pt          # Processed tensor data
+│   ├── model_states/                # Saved model checkpoints
+│   │   ├── chord_model_epoch_10.pth
+│   │   └── chord_model_no_repeats_epo...
+│   └── shared_files/                # Shared utilities and model scripts
+│       ├── chord_identities.py      # Chord identity definitions
+│       ├── generate_chords_from_model.py     # Generation inference script
+│       ├── genetic_algo.py          # Genetic Algorithm implementation
+│       ├── lstm.py                  # LSTM model implementation
+│       └── markov_model.py          # Markov Chain model implementation
+├── visualizations/                  # Output charts and visual comparisons
+├── Images/                          # Project roadmap and documentation images
+├── additional_notes/                # Supplementary notes and references
+│   └── README.md
+├── main.py                          # Entry point and API endpoints
+├── remove_repeats.py                # Data preprocessing utility
+├── requirements.txt                 # Python dependencies
 └── README.md
 ```
 
@@ -87,10 +103,10 @@ python genetic/evolve.py --generations 500 --population 100
 |---|---|
 | Project Proposal | January 25, 2025 |
 | First Check-In | Last week of February |
-| Second Check-In | Last week of March |
-| Presentation Slides | April 8, 2025 |
-| Presentations | April 10, 2025 |
-| Final Deliverables | April 17, 2025 |
+| Second Check-In | March 27th 2026 |
+| Presentation Slides | April 8, 2026 |
+| Online Presentation | April 12, 2026 |
+| 2 Page Overview + Final Deliverables | April 17, 2026 |
 
 
 ## Acknowledgments
