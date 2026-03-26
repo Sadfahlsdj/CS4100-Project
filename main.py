@@ -100,7 +100,6 @@ def return_midi(key: str = 'C', length: int = 16):
     )
 
 
-
 def main():
     """
     sample usage:
@@ -112,7 +111,6 @@ def main():
     midi = _generate_midi(a, 'C')
     filepath = f'./midis/{int(time.time())}.mid'
     midi.write('midi', filepath)
-
 
 
 if __name__ == '__main__':
