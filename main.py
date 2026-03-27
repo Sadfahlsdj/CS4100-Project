@@ -130,7 +130,7 @@ def return_midi(model_type='ga', key: str = 'C', length: int = 16, dataset_type=
     """
     Returns a MIDI file for the generated chord progression.
     :param model_type: ga, genetic, lstm, or markov (case insensitive)
-    :param key: C, C#, Cb etc.
+    :param key: c, C, c#, C#, cb, Cb etc (lowercase = minor, uppercase = major)
     :param length: length of generated sequence; if using lstm, make it an integer multiple of 16
     :param dataset_type: no_repeats or repeats
     :return: midi file
@@ -183,16 +183,9 @@ def return_audio(
             detail=f"Soundfont not found at {SOUNDFONT_PATH}. Make sure GeneralUser-GS.sf2 is in the midi_audio folder."
         )
 
-    # Generate chord sequence
-    try:
-        progression = _generate_sequence(model_type=model_type, length=length, dataset_type=dataset_type)
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
-
-    # Generate MIDI
-    midi_stream = _generate_midi(progression, key=key)
-    mf = music21.midi.translate.streamToMidiFile(midi_stream)
-    midi_data = mf.writestr()
+    # Reusing the /midi endpoint logic
+    midi_response = return_midi(model_type=model_type, key=key, length=length, dataset_type=dataset_type)
+    midi_data = b"".join(midi_response.body_iterator)
 
     # Write MIDI to temp file, convert to WAV using midi_player
     with tempfile.NamedTemporaryFile(suffix='.mid', delete=False) as midi_tmp:

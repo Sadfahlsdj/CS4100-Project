@@ -31,18 +31,8 @@ import argparse
 import os
 import time
 import subprocess
-
-try:
-    import fluidsynth
-except ImportError:
-    print("Missing dependency. Run:  brew install fluidsynth && pip install pyfluidsynth")
-    sys.exit(1)
-
-try:
-    import mido
-except ImportError:
-    print("Missing dependency. Run:  pip install mido")
-    sys.exit(1)
+import fluidsynth
+import mido
 
 # ─── INSTRUMENT MAP ───────────────────────────────────────────────────────────
 # General MIDI program numbers (0-indexed)
@@ -63,14 +53,12 @@ SOUNDFONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'GeneralUse
 def init_synth(instrument_name, soundfont_path):
     """Initialize FluidSynth for live playback with the chosen instrument."""
     if not os.path.exists(soundfont_path):
-        print(f"Error: soundfont not found at '{soundfont_path}'")
-        print("Make sure GeneralUser-GS.sf2 is in the midi_audio folder.")
-        sys.exit(1)
+        raise FileNotFoundError(
+            f"Soundfont not found at '{soundfont_path}'. Make sure GeneralUser-GS.sf2 is in the midi_audio folder.")
 
     program = INSTRUMENTS.get(instrument_name.lower())
     if program is None:
-        print(f"Unknown instrument '{instrument_name}'. Choose from: {', '.join(INSTRUMENTS.keys())}")
-        sys.exit(1)
+        raise ValueError(f"Unknown instrument '{instrument_name}'. Choose from: {', '.join(INSTRUMENTS.keys())}")
 
     fs = fluidsynth.Synth(samplerate=44100.0)
     fs.start(driver='coreaudio')
