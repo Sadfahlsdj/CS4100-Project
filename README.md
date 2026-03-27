@@ -48,12 +48,28 @@ Both models are evaluated on the same dataset of chord progressions. Metrics inc
 
 ```
 .
-├── data/                  # Chord progression datasets
-├── markov/                # Markov Chain model implementation
-├── genetic/               # Genetic Algorithm model implementation
-├── evaluation/            # Evaluation scripts and metrics
-├── utils/                 # Shared utilities (parsing, music theory rules)
-├── results/               # Output progressions and comparison results
+├── models/
+│   ├── data/
+│   │   ├── chord_bases.txt
+│   │   ├── chord_bases_no_repeats.txt
+│   │   ├── chord_bases_no_repeats_proc...
+│   │   └── chord_bases_processed.pt
+│   ├── model_states/
+│   │   ├── chord_model_epoch_10.pth
+│   │   └── chord_model_no_repeats_epo...
+│   └── shared_files/
+│       ├── chord_identities.py
+│       ├── generate_chords_from_model.py
+│       ├── genetic_algo.py
+│       ├── lstm.py
+│       └── markov_model.py
+├── visualizations/
+├── Images/
+├── additional_notes/
+│   └── README.md
+├── main.py
+├── remove_repeats.py
+├── requirements.txt
 └── README.md
 ```
 
