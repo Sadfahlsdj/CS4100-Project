@@ -203,3 +203,22 @@ def fetch_and_render(col, model_type, instrument, key, length, dataset_type, inf
 if compare:
     fetch_and_render(col_a, model_a, inst_a, key, length, dataset_type, info_a)
     fetch_and_render(col_b, model_b, inst_b, key, length, dataset_type, info_b)
+
+# LLM USAGE DISCLOSURE
+# Prompt:
+# Used a large language model (Claude) minimally to assist with Streamlit
+# frontend development. Prompts focused on:
+# - Structuring a side-by-side comparison layout for multiple models
+# - Refining UI consistency across pages (styling, spacing, typography)
+# - Minor suggestions for organizing reusable functions and components
+#
+# What we implemented:
+# - Built a dual-column comparison interface for model outputs
+# - Reused and adapted styling (CSS, theming, layout) from the main app
+# - Created helper functions (like fetch_and_render) for cleaner structure
+# - Improved readability and consistency across frontend components
+#
+# Note:
+# Most frontend logic and design decisions were implemented independently.
+# The LLM was used only for minor layout suggestions and code cleanup.
+# 
