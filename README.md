@@ -116,3 +116,5 @@ We thank the CS 4100 teaching staff - in particular the TAs specializing in gene
 ---
 
 *CS 4100 - Artificial Intelligence, Northeastern University*
+
+Please refer to this link for the slides! https://docs.google.com/presentation/d/1QjZMpee-Lf7EmmIzyUGWxXsNmxJVmbvCdqsEaZNxc6s/edit?usp=sharing
