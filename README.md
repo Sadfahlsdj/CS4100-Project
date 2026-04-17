@@ -5,6 +5,8 @@
 
 **Team:** Mehr Singh Anand (Project Manager), Mihalis Koutouvos, William Sartorio, Nalini Singh
 
+**Link to Project:** https://cs4100-chordlyai.streamlit.app/
+
 ---
 
 ## Usage
@@ -24,6 +26,24 @@ streamlit run app.py
 ```
 
 To test endpoint(s), go to http://127.0.0.1:8000/docs after running the app
+
+## Audio Dependencies
+
+This project uses FluidSynth for MIDI-to-audio rendering. It must be installed separately from the Python dependencies.
+For macOS:
+brew install fluidsynth
+pip install pyfluidsynth
+
+For Windows:
+1. Download the FluidSynth binary from https://github.com/FluidSynth/fluidsynth/releases
+2. Extract and add the `bin/` folder to your system PATH
+3. Then run: `pip install pyfluidsynth`
+
+You will also need to download the GeneralUser GS soundfont and place it in the `midi_audio/` folder:
+https://schristiancollins.com/generaluser.php
+Download `GeneralUser-GS.sf2` and save it as `midi_audio/GeneralUser-GS.sf2`.
+
+## IMPORTANT: If FluidSynth is not available on your system, you can still access the hosted version of the app at: https://cs4100-chordlyai.streamlit.app/
 
 ## Project Statement
 
