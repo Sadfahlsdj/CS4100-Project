@@ -365,3 +365,22 @@ if generate:
             <div class="legend-item"><span class="dot-minor"></span> Minor chord</div>
         </div>
         """, unsafe_allow_html=True)
+
+# LLM USAGE DISCLOSURE
+# Prompt:
+# Used a large language model (ChatGPT) sparingly to assist with frontend
+# development in Streamlit. Prompts focused on:
+# - Improving UI structure and layout (sidebar, top bar, model cards)
+# - Refining custom CSS styling for a cleaner and more modern design
+# - Minor code organization and readability improvements
+#
+# What we implemented:
+# - Added structured layout components (sidebar controls, top navigation, cards)
+# - Enhanced styling using custom CSS (colors, typography, spacing, theming)
+# - Improved naming consistency and general code clarity
+# - Minor suggestions for handling API responses and fallback behavior
+#
+# Note:
+# Most frontend logic and design decisions were implemented independently.
+# The LLM was used only for minor UI/UX suggestions and code cleanup.
+# 
