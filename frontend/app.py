@@ -368,7 +368,7 @@ if generate:
 
 # LLM USAGE DISCLOSURE
 # Prompt:
-# Used a large language model (ChatGPT) sparingly to assist with frontend
+# Used a large language model (Claude) sparingly to assist with frontend
 # development in Streamlit. Prompts focused on:
 # - Improving UI structure and layout (sidebar, top bar, model cards)
 # - Refining custom CSS styling for a cleaner and more modern design
