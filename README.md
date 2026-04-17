@@ -44,6 +44,8 @@ Encodes chord progressions as candidate solutions and evolves them over generati
 ### Evaluation
 Both models are evaluated on the same dataset of chord progressions. Metrics include harmonic coherence, adherence to voice leading rules, and subjective musical quality. A rule-based system supplements both models for error correction and constraint enforcement.
 
+### Front end
+We want to cite our LLM usage for the front end, as we have been greenlight for using claude to develop our handwriten and original design incorporating an interactive way with the models that have been developed 
 
 ```
 ## Repository Structure
